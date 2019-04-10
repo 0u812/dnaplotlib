@@ -128,7 +128,7 @@ def movie(ts, ymtet, ymlac, ymgamma, ytet, ylac, ygamma):
 		plt.plot(ts[int(t*10)], ygamma[int(t*10)], '.', color=[0.38, 0.65, 0.87], markersize=6.0)
 		ax = plt.subplot(gs[2])
 		plot_construct(ax, t, ymtet, ymlac, ymgamma, ytet, ylac, ygamma)
-		plt.savefig("movie/repressilator_t{}.jpg".format(t), dpi=300)
+		plt.savefig("movie/repressilator_t{}.pdf".format(t), dpi=300)
 	
 def main():
 	t = np.arange(0, 30.1, 0.1)
@@ -181,7 +181,7 @@ def main():
 	plt.savefig('repressilator_animate.png', dpi=300)
 	
 	# Generate the movie frames
-	movie(t, ymtet, ymlac, ymgamma, ytet, ylac, ygamma)
+	# movie(t, ymtet, ymlac, ymgamma, ytet, ylac, ygamma)
 	
 if __name__ == '__main__':
 	main()
