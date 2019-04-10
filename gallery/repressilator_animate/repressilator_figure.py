@@ -109,8 +109,8 @@ def main():
 	t = np.arange(0, 30.1, 0.1)
 	ymtet, ymlac, ymgamma, ytet, ylac, ygamma = list(zip(*odeint(repressilator, initial, t)))
 	plt.close()
-	plt.figure(figsize=(3.5, 6.5))
-	gs = gridspec.GridSpec(8, 1, height_ratios=[1, 2.5, 0.1, 1, 1, 1, 1, 1])
+	plt.figure(figsize=(3.5, 1.5))
+	gs = gridspec.GridSpec(1, 1, height_ratios=[1])
 
 	# Plot of repressilator circuit
 	ax = plt.subplot(gs[0])
