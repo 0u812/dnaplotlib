@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-"""
-	Animation of the repressilator gene circuit
-"""
+#!/usr/bin/env python3
 
 import numpy as np
 from scipy.integrate import odeint
@@ -63,7 +60,7 @@ def plot_construct(ax, t, ymtet, ymlac, ymgamma, ytet, ylac, ygamma):
 				[[lac_repress, gamma_repress, tet_repress]])
 	ax.set_ylim([-10, 31])
 
-def main():
+if __name__ == '__main__':
 	plt.close()
 	plt.figure(figsize=(3.5, 1.5))
 	gs = gridspec.GridSpec(1, 1, height_ratios=[1])
@@ -79,7 +76,4 @@ def main():
 
 	# Save the figure
 	plt.savefig('repressilator_animate.pdf', transparent=True)
-	plt.savefig('repressilator_animate.png', dpi=300)
-
-if __name__ == '__main__':
-	main()
+	# plt.savefig('repressilator_animate.png', dpi=300)
