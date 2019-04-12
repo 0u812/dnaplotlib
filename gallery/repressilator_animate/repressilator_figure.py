@@ -14,20 +14,21 @@ __version__ = '1.0'
 # tetr  is orange [1.00, 0.75, 0.17]
 # lacI  is green  [0.38, 0.82, 0.32]
 # gamma is blue   [0.38, 0.65, 0.87]
-plac = {'name':'P_lac', 'start':1, 'end':10, 'type':'Promoter', 'opts': {'color':[0.38, 0.82, 0.32]}}
+plac_color = [x/256. for x in (0.38*256., 0.65*256., 0.87*256.)]
+plac = {'name':'P_lac', 'start':1, 'end':10, 'type':'Promoter', 'opts': {'color':plac_color}}
 rbs1 = {'name':'RBS', 'start':11, 'end':20, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
 tetr = {'name':'tetR', 'start':21, 'end':40, 'type':'CDS', 'opts':{'label': 'tetR', 'fontsize': 8,  'label_y_offset': 0, 'label_x_offset': -2, 'label_style':'italic', 'color':[1.00, 0.75, 0.17]}}
 term1 = {'name':'Term', 'start':41, 'end':55, 'type':'Terminator'}
 pgamma = {'name':'P_gamma', 'start':56, 'end':65, 'type':'Promoter', 'opts': {'color':[0.38, 0.65, 0.87]}}
 rbs2 = {'name':'RBS', 'start':66, 'end':75, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
-laci = {'name':'lacI', 'start':76, 'end':95, 'type':'CDS', 'opts':{'label': 'lacI', 'fontsize': 8,  'label_y_offset': 0, 'label_x_offset': -2, 'label_style':'italic', 'color':[0.38, 0.82, 0.32]}}
+laci = {'name':'lacI', 'start':76, 'end':95, 'type':'CDS', 'opts':{'label': 'lacI', 'fontsize': 8,  'label_y_offset': 0, 'label_x_offset': -2, 'label_style':'italic', 'color':plac_color}}
 term2 = {'name':'Term', 'start':96, 'end':110, 'type':'Terminator'}
 ptet = {'name':'P_tet', 'start':111, 'end':120, 'type':'Promoter', 'opts': {'color':[1.00, 0.75, 0.17]}}
 rbs3 = {'name':'RBS', 'start':121, 'end':130, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
 gamma = {'name':'gamma', 'start':131, 'end':150, 'type':'CDS', 'opts':{'label': 'cI', 'fontsize': 8, 'label_y_offset': 0, 'label_x_offset': -1, 'label_style':'italic', 'color':[0.38, 0.65, 0.87]}}
 term3 = {'name':'Term', 'start':151, 'end':165, 'type':'Terminator'}
 
-lac_repress = {'from_part':laci, 'to_part':plac, 'type':'Repression', 'opts':{'linewidth':1, 'color':[0.38, 0.82, 0.32]}}
+lac_repress = {'from_part':laci, 'to_part':plac, 'type':'Repression', 'opts':{'linewidth':1, 'color':plac_color}}
 gamma_repress = {'from_part':gamma, 'to_part':pgamma, 'type':'Repression', 'opts':{'linewidth':1, 'color':[0.38, 0.65, 0.87]}}
 tet_repress = {'from_part':tetr, 'to_part':ptet, 'type':'Repression', 'opts':{'linewidth':1, 'color':[1.00, 0.75, 0.17]}}
 
@@ -39,14 +40,12 @@ def plot_construct(ax, t, ymtet, ymlac, ymgamma, ytet, ylac, ygamma):
 	tetr['opts']['color'] = [rescale(1 - expression(ymtet[tind], exp_lims), (1.0, 1.0)),
 								rescale(1 - expression(ymtet[tind], exp_lims), (0.75, 1.0)),
 								rescale(1 - expression(ymtet[tind], exp_lims), (0.17, 1.0))]
-	laci['opts']['color'] = [rescale(1 - expression(ymlac[tind], exp_lims), (0.38, 1.0)),
-								rescale(1 - expression(ymlac[tind], exp_lims), (0.82, 1.0)),
-								rescale(1 - expression(ymlac[tind], exp_lims), (0.32, 1.0))]
+	laci['opts']['color'] = [rescale(1 - expression(ymlac[tind], exp_lims), (x, 1.0)) for x in plac_color]
 	gamma['opts']['color'] = [rescale(1 - expression(ymgamma[tind], exp_lims), (0.38, 1.0)),
 								rescale(1 - expression(ymgamma[tind], exp_lims), (0.65, 1.0)),
 								rescale(1 - expression(ymgamma[tind], exp_lims), (0.87, 1.0))]
 	# Set transparency for each of the regulatory lines
-	lac_repress['opts']['color'] = [0.38, 0.82, 0.32,
+	lac_repress['opts']['color'] = [*plac_color,
 								rescale(repression(ylac[tind], 2.0, 8), (0.2, 1.0))]
 	gamma_repress['opts']['color'] = [0.38, 0.65, 0.87,
 								rescale(repression(ygamma[tind], 2.0, 8), (0.2, 1.0))]
