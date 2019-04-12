@@ -15,7 +15,7 @@ __version__ = '1.0'
 # lacI  is green  [0.38, 0.82, 0.32]
 # gamma is blue   [0.38, 0.65, 0.87]
 plac_color = [x/256. for x in (0.38*256., 0.65*256., 0.87*256.)]
-plac = {'name':'P_lac', 'start':1, 'end':10, 'type':'Promoter', 'opts': {'color':plac_color}}
+plac = {'name':'P_lac', 'start':1, 'end':10, 'type':'Promoter'}
 rbs1 = {'name':'RBS', 'start':11, 'end':20, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
 tetr = {'name':'tetR', 'start':21, 'end':40, 'type':'CDS', 'opts':{'label': 'tetR', 'fontsize': 8,  'label_y_offset': 0, 'label_x_offset': -2, 'label_style':'italic', 'color':[1.00, 0.75, 0.17]}}
 term1 = {'name':'Term', 'start':41, 'end':55, 'type':'Terminator'}
