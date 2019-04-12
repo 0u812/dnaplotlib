@@ -17,38 +17,32 @@ red = tuple(x/256.+0.1 for x in (214, 39, 40))
 plac_color = blue
 ptet_color = bright_orange
 pci_color = red
-def make_operon(origin, reverse):
-	plac = {'name':'P_lac', 'start':origin+75, 'end':origin+65, 'fwd': not reverse, 'type':'Promoter', 'opts': {'color':plac_color}}
+def make_operon(origin, reverse, name):
+	plac = {'name':'P_'+name, 'start':origin+75, 'end':origin+65, 'fwd': not reverse, 'type':'Promoter', 'opts': {'color':plac_color}}
 	rbs1 = {'name':'RBS', 'start': origin+10, 'end': origin+5, 'fwd': not reverse, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
-	tetr = {
-		'name': 'tetR',
+	cds = {
+		'name': name+'R',
 		'start': origin+(50 if reverse else 20),
 		'end':   origin+(20 if reverse else 50),
 		'fwd':   not reverse,
 		'type': 'CDS',
 		'opts': {
-			'label': 'tetR',
+			'label': name+'R',
 			'fontsize': 8,
 			'label_y_offset': 0,
 			'label_x_offset': -2,
 			'label_style':'italic',
 			'color':ptet_color}
 		}
-	term1 = {'name':'Term', 'start':origin+5, 'end': origin+15, 'fwd': not reverse, 'type':'Terminator'}
+	term = {'name':'Term', 'start':origin+(15 if reverse else 5), 'end': origin+(5 if reverse else 15), 'fwd': not reverse, 'type':'Terminator'}
+	return cds,term
 
-pgamma = {'name':'P_gamma', 'start':56, 'end':65, 'type':'Promoter', 'opts': {'color':pci_color}}
-rbs2 = {'name':'RBS', 'start':66, 'end':75, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
-laci = {'name':'lacI', 'start':76, 'end':95, 'type':'CDS', 'opts':{'label': 'lacI', 'fontsize': 8,  'label_y_offset': 0, 'label_x_offset': -2, 'label_style':'italic', 'color':plac_color}}
-term2 = {'name':'Term', 'start':96, 'end':110, 'type':'Terminator'}
+tetr, term1 = make_operon(0, True, 'lac')
+laci, term2 = make_operon(0, False, 'tet')
 
-ptet = {'name':'P_tet', 'start':111, 'end':120, 'type':'Promoter', 'opts': {'color':ptet_color}}
-rbs3 = {'name':'RBS', 'start':121, 'end':130, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
-gamma = {'name':'gamma', 'start':131, 'end':150, 'type':'CDS', 'opts':{'label': 'cI', 'fontsize': 8, 'label_y_offset': 0, 'label_x_offset': -1, 'label_style':'italic', 'color':pci_color}}
-term3 = {'name':'Term', 'start':151, 'end':165, 'type':'Terminator'}
-
-lac_repress = {'from_part':laci, 'to_part':plac, 'type':'Repression', 'opts':{'linewidth':1, 'color':plac_color}}
-gamma_repress = {'from_part':gamma, 'to_part':pgamma, 'type':'Repression', 'opts':{'linewidth':1, 'color':pci_color}}
-tet_repress = {'from_part':tetr, 'to_part':ptet, 'type':'Repression', 'opts':{'linewidth':1, 'color':ptet_color}}
+# lac_repress = {'from_part':laci, 'to_part':plac, 'type':'Repression', 'opts':{'linewidth':1, 'color':plac_color}}
+# gamma_repress = {'from_part':gamma, 'to_part':pgamma, 'type':'Repression', 'opts':{'linewidth':1, 'color':pci_color}}
+# tet_repress = {'from_part':tetr, 'to_part':ptet, 'type':'Repression', 'opts':{'linewidth':1, 'color':ptet_color}}
 
 if __name__ == '__main__':
 	plt.close()
@@ -60,7 +54,7 @@ if __name__ == '__main__':
 	# dnaplotlib.plot_sbol_designs([ax], [[plac, rbs1, tetr, term1, pgamma, rbs2, laci, term2, ptet, rbs3, gamma, term3]],
 	# 			[[lac_repress, gamma_repress, tet_repress]])
 	# dnaplotlib.plot_sbol_designs([ax], [[plac, rbs1, tetr, term1]])
-	dnaplotlib.plot_sbol_designs([ax], [[term1, tetr, rbs1, plac]])
+	dnaplotlib.plot_sbol_designs([ax], [[term1, tetr, laci, term2]])
 	ax.set_ylim([-15, 31])
 
 	# Update subplot spacing
