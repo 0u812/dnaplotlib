@@ -18,16 +18,16 @@ lac_color = blue
 tet_color = bright_orange
 ci_color = red
 def make_operon(origin, reverse, name, p_color, cds_color):
-	p = {'name':'P_'+name, 'start':origin+(75 if reverse else 65), 'end':origin+(65 if reverse else 75), 'fwd': not reverse, 'type':'Promoter', 'opts': {'color':p_color}}
+	p = {'name':'P', 'start':origin+(75 if reverse else 65), 'end':origin+(65 if reverse else 75), 'fwd': not reverse, 'type':'Promoter', 'opts': {'color':p_color}}
 	rbs = {'name':'RBS', 'start': origin+(10 if reverse else 5), 'end': origin+(5 if reverse else 10), 'fwd': not reverse, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
 	cds = {
-		'name': name+'R',
+		'name': name,
 		'start': origin+(50 if reverse else 20),
 		'end':   origin+(20 if reverse else 50),
 		'fwd':   not reverse,
 		'type': 'CDS',
 		'opts': {
-			'label': name+'R',
+			'label': name,
 			'fontsize': 8,
 			'label_y_offset': 0,
 			'label_x_offset': -2,
@@ -37,12 +37,11 @@ def make_operon(origin, reverse, name, p_color, cds_color):
 	term = {'name':'Term', 'start':origin+(15 if reverse else 5), 'end': origin+(5 if reverse else 15), 'fwd': not reverse, 'type':'Terminator'}
 	return p,rbs,cds,term
 
-p1, rbs1, tetr, term1 = make_operon(origin=0, reverse=True,  name='lac', p_color=tet_color, cds_color=lac_color)
-p2, rbs2, laci, term2 = make_operon(origin=0, reverse=False, name='tet', p_color=lac_color, cds_color=tet_color)
+ptet, rbs1, laci, term1 = make_operon(origin=0, reverse=True,  name='lacI', p_color=tet_color, cds_color=lac_color)
+plac, rbs2, tetr, term2 = make_operon(origin=0, reverse=False, name='tetR', p_color=lac_color, cds_color=tet_color)
 
-# lac_repress = {'from_part':laci, 'to_part':plac, 'type':'Repression', 'opts':{'linewidth':1, 'color':plac_color}}
-# gamma_repress = {'from_part':gamma, 'to_part':pgamma, 'type':'Repression', 'opts':{'linewidth':1, 'color':pci_color}}
-# tet_repress = {'from_part':tetr, 'to_part':ptet, 'type':'Repression', 'opts':{'linewidth':1, 'color':ptet_color}}
+lac_repress = {'from_part':laci, 'to_part':plac, 'type':'Repression', 'opts':{'linewidth':1, 'color':lac_color}}
+tet_repress = {'from_part':tetr, 'to_part':ptet, 'type':'Repression', 'opts':{'linewidth':1, 'color':tet_color}}
 
 if __name__ == '__main__':
 	plt.close()
@@ -54,8 +53,8 @@ if __name__ == '__main__':
 	# dnaplotlib.plot_sbol_designs([ax], [[plac, rbs1, tetr, term1, pgamma, rbs2, laci, term2, ptet, rbs3, gamma, term3]],
 	# 			[[lac_repress, gamma_repress, tet_repress]])
 	# dnaplotlib.plot_sbol_designs([ax], [[plac, rbs1, tetr, term1]])
-	dnaplotlib.plot_sbol_designs([ax], [[term1, tetr, rbs1, p1, p2, rbs2, laci, term2]])
-	ax.set_ylim([-15, 31])
+	dnaplotlib.plot_sbol_designs([ax], [[term1, laci, rbs1, ptet, plac, rbs2, tetr, term2]], [[lac_repress, tet_repress]])
+	ax.set_ylim([-25, 31])
 
 	# Update subplot spacing
 	plt.subplots_adjust(hspace=0.4, left=0.12, right=0.95, top=0.99, bottom=0.01)
