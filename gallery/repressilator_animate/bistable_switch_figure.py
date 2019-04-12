@@ -19,7 +19,7 @@ ptet_color = bright_orange
 pci_color = red
 def make_operon(origin, reverse, name):
 	plac = {'name':'P_'+name, 'start':origin+75, 'end':origin+65, 'fwd': not reverse, 'type':'Promoter', 'opts': {'color':plac_color}}
-	rbs1 = {'name':'RBS', 'start': origin+10, 'end': origin+5, 'fwd': not reverse, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
+	rbs = {'name':'RBS', 'start': origin+(10 if reverse else 5), 'end': origin+(5 if reverse else 10), 'fwd': not reverse, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
 	cds = {
 		'name': name+'R',
 		'start': origin+(50 if reverse else 20),
@@ -35,10 +35,10 @@ def make_operon(origin, reverse, name):
 			'color':ptet_color}
 		}
 	term = {'name':'Term', 'start':origin+(15 if reverse else 5), 'end': origin+(5 if reverse else 15), 'fwd': not reverse, 'type':'Terminator'}
-	return cds,term
+	return rbs,cds,term
 
-tetr, term1 = make_operon(0, True, 'lac')
-laci, term2 = make_operon(0, False, 'tet')
+rbs1, tetr, term1 = make_operon(0, True, 'lac')
+rbs2, laci, term2 = make_operon(0, False, 'tet')
 
 # lac_repress = {'from_part':laci, 'to_part':plac, 'type':'Repression', 'opts':{'linewidth':1, 'color':plac_color}}
 # gamma_repress = {'from_part':gamma, 'to_part':pgamma, 'type':'Repression', 'opts':{'linewidth':1, 'color':pci_color}}
@@ -54,7 +54,7 @@ if __name__ == '__main__':
 	# dnaplotlib.plot_sbol_designs([ax], [[plac, rbs1, tetr, term1, pgamma, rbs2, laci, term2, ptet, rbs3, gamma, term3]],
 	# 			[[lac_repress, gamma_repress, tet_repress]])
 	# dnaplotlib.plot_sbol_designs([ax], [[plac, rbs1, tetr, term1]])
-	dnaplotlib.plot_sbol_designs([ax], [[term1, tetr, laci, term2]])
+	dnaplotlib.plot_sbol_designs([ax], [[term1, tetr, rbs1, rbs2, laci, term2]])
 	ax.set_ylim([-15, 31])
 
 	# Update subplot spacing
