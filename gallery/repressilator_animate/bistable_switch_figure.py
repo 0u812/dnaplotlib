@@ -17,28 +17,30 @@ red = tuple(x/256.+0.1 for x in (214, 39, 40))
 plac_color = blue
 ptet_color = bright_orange
 pci_color = red
-plac = {'name':'P_lac', 'start':40, 'end':35, 'type':'Promoter', 'opts': {'color':plac_color}}
-rbs1 = {'name':'RBS', 'start':30, 'end':25, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
-tetr = {
-	'name': 'tetR',
-	'start': 50,
-	'end':   20,
-	'fwd':   False,
-	'type': 'CDS',
-	'opts': {
-		'label': 'tetR',
-		'fontsize': 8,
-		'label_y_offset': 0,
-		'label_x_offset': -2,
-		'label_style':'italic',
-		'color':ptet_color}
-	}
-term1 = {'name':'Term', 'start':10, 'end':5, 'type':'Terminator'}
+def make_operon(origin, reverse):
+	plac = {'name':'P_lac', 'start':origin+75, 'end':origin+65, 'fwd': not reverse, 'type':'Promoter', 'opts': {'color':plac_color}}
+	rbs1 = {'name':'RBS', 'start': origin+10, 'end': origin+5, 'fwd': not reverse, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
+	tetr = {
+		'name': 'tetR',
+		'start': origin+(50 if reverse else 20),
+		'end':   origin+(20 if reverse else 50),
+		'fwd':   not reverse,
+		'type': 'CDS',
+		'opts': {
+			'label': 'tetR',
+			'fontsize': 8,
+			'label_y_offset': 0,
+			'label_x_offset': -2,
+			'label_style':'italic',
+			'color':ptet_color}
+		}
+	term1 = {'name':'Term', 'start':origin+5, 'end': origin+15, 'fwd': not reverse, 'type':'Terminator'}
 
 pgamma = {'name':'P_gamma', 'start':56, 'end':65, 'type':'Promoter', 'opts': {'color':pci_color}}
 rbs2 = {'name':'RBS', 'start':66, 'end':75, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
 laci = {'name':'lacI', 'start':76, 'end':95, 'type':'CDS', 'opts':{'label': 'lacI', 'fontsize': 8,  'label_y_offset': 0, 'label_x_offset': -2, 'label_style':'italic', 'color':plac_color}}
 term2 = {'name':'Term', 'start':96, 'end':110, 'type':'Terminator'}
+
 ptet = {'name':'P_tet', 'start':111, 'end':120, 'type':'Promoter', 'opts': {'color':ptet_color}}
 rbs3 = {'name':'RBS', 'start':121, 'end':130, 'type':'RBS', 'opts':{'linewidth': 0, 'color':[0.0, 0.0, 0.0]}}
 gamma = {'name':'gamma', 'start':131, 'end':150, 'type':'CDS', 'opts':{'label': 'cI', 'fontsize': 8, 'label_y_offset': 0, 'label_x_offset': -1, 'label_style':'italic', 'color':pci_color}}
@@ -48,29 +50,6 @@ lac_repress = {'from_part':laci, 'to_part':plac, 'type':'Repression', 'opts':{'l
 gamma_repress = {'from_part':gamma, 'to_part':pgamma, 'type':'Repression', 'opts':{'linewidth':1, 'color':pci_color}}
 tet_repress = {'from_part':tetr, 'to_part':ptet, 'type':'Repression', 'opts':{'linewidth':1, 'color':ptet_color}}
 
-def plot_construct(ax, t, ymtet, ymlac, ymgamma, ytet, ylac, ygamma):
-	tind = int(t*10)
-	exp_lims = (1.0, 4.0)
-	ax.set_title('t = {}'.format(t), fontsize=8)
-	# Set color for each of the CDSs
-	tetr['opts']['color'] = [rescale(1 - expression(ymlac[tind], exp_lims), (x, 1.0)) for x in ptet_color]
-	laci['opts']['color'] = [rescale(1 - expression(ymlac[tind], exp_lims), (x, 1.0)) for x in plac_color]
-	gamma['opts']['color'] = [rescale(1 - expression(ymlac[tind], exp_lims), (x, 1.0)) for x in pci_color]
-	# Set transparency for each of the regulatory lines
-	lac_repress['opts']['color'] = [*plac_color,
-								rescale(repression(ylac[tind], 2.0, 8), (0.2, 1.0))]
-	gamma_repress['opts']['color'] = [*pci_color,
-								rescale(repression(ygamma[tind], 2.0, 8), (0.2, 1.0))]
-	tet_repress['opts']['color'] = [*ptet_color,
-								rescale(repression(ytet[tind], 2.0, 8), (0.2, 1.0))]
-	# Set width for each of the regulatory lines
-	lac_repress['opts']['linewidth'] = rescale(repression(ylac[tind], 2.0, 8), (0.5, 2.0))
-	gamma_repress['opts']['linewidth'] = rescale(repression(ygamma[tind], 2.0, 8), (0.5, 2.0))
-	tet_repress['opts']['linewidth'] = rescale(repression(ytet[tind], 2.0, 8), (0.5, 2.0))
-	dnaplotlib.plot_sbol_designs([ax], [[plac, rbs1, tetr, term1, pgamma, rbs2, laci, term2, ptet, rbs3, gamma, term3]],
-				[[lac_repress, gamma_repress, tet_repress]])
-	ax.set_ylim([-10, 31])
-
 if __name__ == '__main__':
 	plt.close()
 	plt.figure(figsize=(3.5, 1.5))
@@ -78,9 +57,11 @@ if __name__ == '__main__':
 
 	# Plot of repressilator circuit
 	ax = plt.subplot(gs[0])
-	dnaplotlib.plot_sbol_designs([ax], [[plac, rbs1, tetr, term1, pgamma, rbs2, laci, term2, ptet, rbs3, gamma, term3]],
-				[[lac_repress, gamma_repress, tet_repress]])
-	ax.set_ylim([-10, 31])
+	# dnaplotlib.plot_sbol_designs([ax], [[plac, rbs1, tetr, term1, pgamma, rbs2, laci, term2, ptet, rbs3, gamma, term3]],
+	# 			[[lac_repress, gamma_repress, tet_repress]])
+	# dnaplotlib.plot_sbol_designs([ax], [[plac, rbs1, tetr, term1]])
+	dnaplotlib.plot_sbol_designs([ax], [[term1, tetr, rbs1, plac]])
+	ax.set_ylim([-15, 31])
 
 	# Update subplot spacing
 	plt.subplots_adjust(hspace=0.4, left=0.12, right=0.95, top=0.99, bottom=0.01)
